@@ -118,6 +118,7 @@ class WickedPdf
           stylesheet_pack_tag(*sources)
         else
           css_text = sources.collect do |source|
+            p "wicked_pdf_stylesheet_pack_tag source: #{source}"
             source = WickedPdfHelper.add_extension(source, 'css')
             wicked_pdf_stylesheet_link_tag(webpacker_source_url(source))
           end.join("\n")
@@ -204,7 +205,7 @@ class WickedPdf
         elsif defined?(Propshaft::Assembly) && Rails.application.assets.is_a?(Propshaft::Assembly)
           PropshaftAsset.new(Rails.application.assets.load_path.find(path))
         elsif webpacker_class
-          path
+          LocalAsset.new(path) if File.file?(path)
         elsif Rails.application.respond_to?(:assets_manifest)
           relative_asset_path = get_asset_path_from_manifest(path)
           return unless relative_asset_path
@@ -300,8 +301,10 @@ class WickedPdf
         # In Webpacker 3.2.0 asset_pack_url is introduced
         if webpacker_version >= '3.2.0'
           if (host = Rails.application.config.asset_host)
+            p "wicked_pdf_stylesheet_pack_tag asset_pack_path(source, :host => host): #{asset_pack_path(source, :host => host)}"
             asset_pack_path(source, :host => host)
           else
+            p "wicked_pdf_stylesheet_pack_tag asset_pack_path(source): #{asset_pack_path(source)}"
             asset_pack_url(source)
           end
         else
