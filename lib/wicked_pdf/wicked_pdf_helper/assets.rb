@@ -203,6 +203,8 @@ class WickedPdf
           Rails.application.assets.find_asset(path, :base_path => Rails.application.root.to_s)
         elsif defined?(Propshaft::Assembly) && Rails.application.assets.is_a?(Propshaft::Assembly)
           PropshaftAsset.new(Rails.application.assets.load_path.find(path))
+        elsif webpacker_class
+          path
         elsif Rails.application.respond_to?(:assets_manifest)
           relative_asset_path = get_asset_path_from_manifest(path)
           return unless relative_asset_path
